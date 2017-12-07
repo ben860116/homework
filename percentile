@@ -1,0 +1,49 @@
+Create table If Not Exists trips (Id int, Client_Id int, Driver_Id int, City_Id int, Status varchar(100), Request_at timestamp,actual_eta int,predicted_eta int);
+Create table If Not Exists events (rider_Id int,City_Id int, event_name varchar(100), _ts timestamp );
+Truncate table Trips;
+insert into Trips (Id, Client_Id, Driver_Id, City_Id, Status, Request_at,actual_eta,predicted_eta) values ('1', '1', '1', '10', 'cancelled_by_driver', '2016-01-05',20,15);
+insert into Trips (Id, Client_Id, Driver_Id, City_Id, Status, Request_at,actual_eta,predicted_eta) values ('2', '2', '2', '11', 'cancelled_by_driver', '2016-01-05',18,20);
+insert into Trips (Id, Client_Id, Driver_Id, City_Id, Status, Request_at,actual_eta,predicted_eta) values ('3', '3', '3', '10', 'completed', '2016-01-05',30,40);
+insert into Trips (Id, Client_Id, Driver_Id, City_Id, Status, Request_at,actual_eta,predicted_eta) values ('4', '4', '4', '10', 'cancelled_by_client', '2016-01-05',50,80);
+insert into Trips (Id, Client_Id, Driver_Id, City_Id, Status, Request_at,actual_eta,predicted_eta) values ('5', '1', '1', '10', 'cancelled_by_driver', '2016-01-05',10,100);
+insert into Trips (Id, Client_Id, Driver_Id, City_Id, Status, Request_at,actual_eta,predicted_eta) values ('6', '2', '2', '11', 'completed', '2016-01-25',20,88);
+insert into Trips (Id, Client_Id, Driver_Id, City_Id, Status, Request_at,actual_eta,predicted_eta) values ('7', '3', '3', '10', 'completed', '2016-01-05',66,55);
+insert into Trips (Id, Client_Id, Driver_Id, City_Id, Status, Request_at,actual_eta,predicted_eta) values ('8', '2', '2', '11', 'completed', '2016-01-25',30,31);
+insert into Trips (Id, Client_Id, Driver_Id, City_Id, Status, Request_at,actual_eta,predicted_eta) values ('9', '3', '3', '10', 'completed', '2013-01-05',20,28);
+insert into Trips (Id, Client_Id, Driver_Id, City_Id, Status, Request_at,actual_eta,predicted_eta) values ('10', '4', '4', '10', 'cancelled_by_driver', '2016-01-05',18,16);
+Truncate table events;
+insert into events (rider_Id, City_ID, event_name, _ts) values ('1', '10', 'attempted_sign_up','2013-09-01');
+insert into events (rider_Id, City_ID, event_name, _ts) values ('2', '11', 'attempted_sign_up','2013-09-26');
+insert into events (rider_Id, City_ID, event_name, _ts) values ('3', '10', 'attempted_sign_up','2013-09-27');
+insert into events (rider_Id, City_ID, event_name, _ts) values ('4', '11', 'attempted_sign_up','2013-09-27');
+insert into events (rider_Id, City_ID, event_name, _ts) values ('1', '10', 'sign_up_failure','2013-09-02');
+insert into events (rider_Id, City_ID, event_name, _ts) values ('2', '11', 'sign_up_failure','2013-09-26');
+insert into events (rider_Id, City_ID, event_name, _ts) values ('3', '10', 'sign_up_failure','2013-09-27');
+insert into events (rider_Id, City_ID, event_name, _ts) values ('4', '11', 'sign_up_failure','2013-09-28');
+insert into events (rider_Id, City_ID, event_name, _ts) values ('1', '10', 'sign_up_success','2016-01-04');
+insert into events (rider_Id, City_ID, event_name, _ts) values ('2', '11', 'attempted_sign_up','2013-09-28');
+insert into events (rider_Id, City_ID, event_name, _ts) values ('3', '10', 'attempted_sign_up','2013-09-28');
+insert into events (rider_Id, City_ID, event_name, _ts) values ('4', '11', 'attempted_sign_up','2013-09-28');
+insert into events (rider_Id, City_ID, event_name, _ts) values ('2', '10', 'sign_up_success','2016-01-04');
+insert into events (rider_Id, City_ID, event_name, _ts) values ('3', '11', 'sign_up_success','2016-01-04');
+insert into events (rider_Id, City_ID, event_name, _ts) values ('4', '10', 'sign_up_success','2016-01-04');
+Truncate table cities;
+insert into cities (city_id,city_name) values ('10','Qarth');
+insert into cities (city_id,city_name) values('11', 'Meereen');
+
+
+select cities.city_name,
+percentile_cont(0.9) WITHIN GROUP (ORDER BY (trips.actual_eta-trips.predicted_eta))
+from trips 
+right join cities
+on trips.city_id= cities.city_id
+where
+trips.status='completed'
+and cities.city_name in ('Qarth','Meereen') 
+
+and EXTRACT(EPOCH FROM now()-trips.request_at)/3600 <= 720  ###the date should be now or ?
+group by cities.city_name;
+
+
+
+
