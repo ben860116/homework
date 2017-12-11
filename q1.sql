@@ -1,7 +1,7 @@
 select cities.city_name,
 percentile_cont(0.9) WITHIN GROUP (ORDER BY (trips.actual_eta-trips.predicted_eta))
-from trips 
-right join cities
+from cities 
+left join trips
 on trips.city_id= cities.city_id
 where
 trips.status='completed'
