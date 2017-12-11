@@ -18,8 +18,8 @@ left join cities m on m.city_id=n.city_id
 left join trips o on n.rider_id=o.client_id 
 where n.event_name='sign_up_success'
 and m.city_name in ('Qarth' , 'Meereen')
-and extract(year FROM n._ts) = 2016 
-and extract(week from n._ts) = 1  
+and extract(year FROM n._ts) = 2015 
+and extract(week from n._ts) = 53 
 and o.status='completed'
 and EXTRACT(EPOCH FROM o.request_at - n._ts)/3600 <= 168
 group by m.city_name,extract(dow FROM n._ts)
